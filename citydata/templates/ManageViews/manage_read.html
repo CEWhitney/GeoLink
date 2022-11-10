@@ -1,0 +1,9 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Cities in Network</h1>
+  <div class="table-responsive table-block">
+    {% load django_tables2 %}
+    {% render_table table 'table.html' %}
+  </div>
+{% endblock %}
