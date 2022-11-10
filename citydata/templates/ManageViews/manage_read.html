@@ -2,8 +2,21 @@
 
 {% block content %}
   <h1>Cities in Network</h1>
-  <div class="table-responsive table-block">
+  <div class="table-responsive table-block" style="margin-bottom: 50px;display: flex;flex-direction: column; height:auto;">
     {% load django_tables2 %}
     {% render_table table 'table.html' %}
+    <form action="/citydata/manage/" method="post">
+      {% csrf_token %}
+      {{ form }}
+      <input type="submit" value="GO">
+      {% csrf_token %}
+      {{ searchform }}
+    </form>
+    <form action="citydata/manage/" method="post">
+
+    </form>
   </div>
+  <footer style="height: 50px;">
+
+  </footer>
 {% endblock %}

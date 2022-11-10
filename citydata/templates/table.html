@@ -53,7 +53,8 @@
             {% endblock table.tfoot %}
         </table>
     {% endblock table %}
-
+    
+</script>
     {% block pagination %}
         {% if table.page and table.paginator.num_pages > 1 %}
         <ul class="pagination" style="background-color:#d1d1d1;
@@ -61,8 +62,13 @@
         -moz-border-radius:10px;
         -webkit-border-radius:10px;
         font-family: sans-serif;
-        font-size: 20px;
+        font-size: 1.2vw;
         letter-spacing: 1.8px;text-transform: uppercase;
+        display:flex; flex-flow: row nowrap; justify-content:space-around;
+        position:fixed;
+        width: 57%;
+        min-width: 550px;
+        bottom: 0;
         ">
             {% if table.page.has_previous %}
                 {% block pagination.previous %}
@@ -76,14 +82,14 @@
             {% if table.page.has_previous or table.page.has_next %}
             {% block pagination.range %}
                 {% for p in table.page|table_page_range:table.paginator %}
-                    <li {% if p == table.page.number %}class="active"{% endif %} style="margin:10px">
+                    <li {% if p == table.page.number %}class="active"{% endif %} style="margin:10px;">
                         {% if p == '...' %}
-                            <p style="color: #3C3C3C;margin: 0px;-moz-user-select: none;user-select: none">{{ p }}</p>
+                            <p style="color: #3C3C3C;margin: 0px;-moz-user-select: none;user-select: none;">{{ p }}</p>
                         {% else %}
                             {% if p == table.page.number %}
                                 <p style="text-decoration:none;color:#FFFFFF;margin:0px">{{ p }}</p>
                             {% else %}
-                                <a href="{% querystring table.prefixed_page_field=p %}" style="text-decoration:none;color: #3C3C3C">
+                                <a href="{% querystring table.prefixed_page_field=p %}" style="text-decoration:none;color: #3C3C3C;">
                                     {{ p }}
                                 </a>
                             {% endif %}
@@ -102,6 +108,7 @@
                 {% endblock pagination.next %}
             {% endif %}
         </ul>
+        <div></div>
         {% endif %}
     {% endblock pagination %}
 </div>
