@@ -1,22 +1,23 @@
 from django.shortcuts import render
 from .models import Cities
 from .utils.forms import PageForm
-from .utils.forms import SearchForm
 import django_tables2 as tables
 from django.http import HttpResponseRedirect
 from django.views.generic.edit import FormMixin
+from django_filters.views import FilterView
 
 # Create your views here.
 
 class CitiesTable(tables.Table):
     class Meta:
         model = Cities
-        attrs = {"class": "table table-striped table-bordered text-nowrap",
+        attrs = {"class": "table table-striped table-bordered text-nowrap ",
                  "th": {
-                        "width": "10%"
+                        "width": "10%",
+                        "class": "table-light"
                     }
                  }
-
+    
 def index(request):
     num_cities = Cities.objects.count()
 
@@ -27,7 +28,7 @@ def index(request):
 
     return render(request, 'index.html', context = context)
 
-class ManageView(tables.SingleTableView, FormMixin):
+class ManageView(tables.SingleTableView, FormMixin, FilterView):
     table_class = CitiesTable
     queryset = Cities.objects.all()
 
@@ -36,26 +37,18 @@ class ManageView(tables.SingleTableView, FormMixin):
     form_class = PageForm
     success_url = 'success'
 
-    def get(self, request, *args, **kwargs):
-        context = {'pageform': PageForm(), 'searchform': SearchForm()}
-        return self.render_to_response('ManageView/manage_read.html', context)
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(city__icontains=self.request.GET.get('search', '')) | qs.filter(country__icontains=self.request.GET.get('search', ''))
+
 
     def post(self,request):
         form = PageForm(request.POST)
         if form.is_valid():
-            return HttpResponseRedirect('/citydata/manage/?page='+form.cleaned_data['new_page'])
+            queryset = Cities.objects.all().filter(city__icontains=form.cleaned_data['search_query'])
+            return HttpResponseRedirect('/citydata/manage/?page='+form.cleaned_data['new_page']+'&search='+form.cleaned_data['search_query'])
         return HttpResponseRedirect('/citydata/manage/')
 
 def routing(request):
 
     return render(request, 'routing.html')
-
-def new_page(request):
-    if request.method == 'POST':
-        form = PageForm(request.POST)
-        if form.is_valid():
-            return HttpResponseRedirect('/citydata/manage/?page='+form.new_page)
-    else :
-        form = PageForm()
-    
-    return HttpResponseRedirect('/citydata/manage/')
