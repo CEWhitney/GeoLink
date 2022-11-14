@@ -1,10 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Cities
 from .utils.forms import PageForm
 import django_tables2 as tables
 from django.http import HttpResponseRedirect
 from django.views.generic.edit import FormMixin
 from django_filters.views import FilterView
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+from django.contrib import messages
 
 # Create your views here.
 
@@ -52,3 +55,15 @@ class ManageView(tables.SingleTableView, FormMixin, FilterView):
 def routing(request):
 
     return render(request, 'routing.html')
+
+def register_request(request):
+	if request.method == "POST":
+		form = UserCreationForm(request.POST)
+		if form.is_valid():
+			user = form.save()
+			login(request, user)
+			messages.success(request, "Registration successful." )
+			return redirect("home")
+		messages.error(request, "Unsuccessful registration. Invalid information.")
+	form = UserCreationForm()
+	return render (request=request, template_name="registration/register.html", context={"register_form":form})

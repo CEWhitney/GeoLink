@@ -1,0 +1,15 @@
+{% extends "base_generic.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container py-5">
+  <h2>Login</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button class="btn btn-primary" type="submit">Login</button>
+  </form>
+  <p class="text-center">New user? <a class="blue" href={% url 'register' %}>Register</a> instead.</p>
+</div>
+{% endblock %}

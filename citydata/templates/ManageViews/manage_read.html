@@ -1,6 +1,7 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
+{% if user.is_authenticated %}
   <div style="display:flex; flex-direction:row;">
     <h1>Cities in Network</h1>
     <form action="/citydata/manage/" method="post" style="display:flex; align-items:center; margin-left:10px; gap:5px;">
@@ -19,4 +20,8 @@
   <footer style="height: 50px;">
 
   </footer>
+{% else %}
+<h2>You are not logged in</h2>
+<a class="blue" href="{% url 'login' %}">Log In</a>
+{% endif %}
 {% endblock %}
