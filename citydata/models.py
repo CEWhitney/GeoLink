@@ -15,7 +15,7 @@ class Cities(models.Model):
         ordering = ['-population']
         db_table = 'cities'
 
-    def linked(self):
+    def linked(self):   #returns querylist of cities with edges to current city
         city_list = []
         cities = Cities.objects.all()
         for c in cities:
@@ -24,7 +24,7 @@ class Cities(models.Model):
         cities = cities.filter(id__in=city_list)
         return cities
     
-    def other(self, edge):
+    def other(self, edge):  #returns city that isn't current city from edge
         if self == edge.city1:
             return edge.city2
         return edge.city1
