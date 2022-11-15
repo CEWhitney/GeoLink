@@ -1,0 +1,23 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<h1>{{ city.city }}, {{ city.country }}</h1>
+<button class="btn btn-info btn-lg"id="delete"onclick="document.getElementById('id01').style.display='block'">Delete</button>
+
+<div id="id01" class="modal">
+  <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
+  <form class="modal-content" action="/action_page.php">
+      <div class="container">
+      <h1>Are You Sure?</h1>
+      <p>This will remove the city and all associated connections from your network</p>
+  
+      <div class="clearfix">
+        <button type="button" class="btn cancelbtn"onclick="document.getElementById('id01').style.display='none'">Cancel</button>
+        <a type="button" class="btn deletebtn"href="{% url 'delete' %}?city={{ city.id }}">Delete</a>
+      </div>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

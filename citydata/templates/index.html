@@ -2,7 +2,12 @@
 
 {% block content %}
   <h1>Geo Link</h1>
-  <p>Welcome to Your Network</p>
+  {% if user.is_authenticated %}
+  <p>Welcome to Your Network, <strong> {{ user.get_username }} </strong></p>
   <h2>Your Network</h2>
   <p>Your network has <strong> {{ num_cities }} </strong> cities</p>
+  {% else %}
+  <h3>You aren't logged in</h3>
+  <a class="blue" href="{% url 'login' %}">Log In</a>
+  {% endif %}
 {% endblock %}

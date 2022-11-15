@@ -1,6 +1,5 @@
 from django import forms
-from django.forms import NumberInput
-from django.forms import TextInput
+from django.forms import NumberInput, TextInput
 
 
 class PageForm(forms.Form):

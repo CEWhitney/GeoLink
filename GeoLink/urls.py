@@ -14,15 +14,20 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.views.generic import RedirectView
-from django.urls import include
 from django.conf import settings
 from django.conf.urls.static import static
+from .utils.viewsets import router
+from rest_framework.documentation import include_docs_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('account/', include("django.contrib.auth.urls")),
     path('citydata/', include('citydata.urls')),
     path('', RedirectView.as_view(url='citydata/', permanent=True), name='home'),
+    path('api', include(router.urls)),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('docs/', include_docs_urls(title='My API service'), name='api-docs'),
+
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

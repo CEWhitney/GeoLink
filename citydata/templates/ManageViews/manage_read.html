@@ -2,7 +2,7 @@
 
 {% block content %}
 {% if user.is_authenticated %}
-  <div style="display:flex; flex-direction:row;">
+  <div id="title">
     <h1>Cities in Network</h1>
     <form action="/citydata/manage/" method="post" style="display:flex; align-items:center; margin-left:10px; gap:5px;">
       {% csrf_token %}
@@ -13,15 +13,12 @@
   <div class="table-responsive table-block" style="margin-bottom: 50px;display: flex;flex-direction: column; height:auto;">
     {% load django_tables2 %}
     {% render_table table 'table.html' %}
-    <form action="citydata/manage/" method="post">
-
-    </form>
   </div>
   <footer style="height: 50px;">
 
   </footer>
 {% else %}
-<h2>You are not logged in</h2>
+<h2>Log in to create a network</h2>
 <a class="blue" href="{% url 'login' %}">Log In</a>
 {% endif %}
 {% endblock %}

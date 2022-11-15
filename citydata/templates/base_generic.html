@@ -8,6 +8,8 @@
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
   <!-- Add additional CSS in static file -->
   {% load static %}
+  <script src="{% static 'rest_framework/js/coreapi-0.1.1.js' %}"></script>
+  <script src="{% url 'api-docs:schema-js' %}"></script>
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
   <link rel="icon" type="image/png" href="{% static 'assets/earth.png' %}"/>
 </head>
@@ -18,7 +20,9 @@
       {% block sidebar %}
         <ul class="sidebar-nav row text-nowrap list-group">
           <li><a href="{% url 'index' %}">Home</a></li>
-          <li><a href="{% url 'manage' %}">Network Management</a></li>
+          <li><a href="{% url 'manage' %}">Manage Network</a></li>
+          <li><a href="{% url 'manage_add' %}">Add Cities</a></li>
+          <li><a href="{% url 'edges' %}">Manage Connections</a></li>
           <li><a href="{% url 'routing' %}">Network Routing</a></li>
           {% if user.is_authenticated %}
           <li><a href="{% url 'logout' %}">Logout</a></li>
@@ -28,7 +32,7 @@
         </ul>
      {% endblock %}
       </div>
-      <div class="col-sm-10" id="content">{% block content %}{% endblock %}</div>
+      <div class="col-sm-10" id="content" align="center">{% block content %}{% endblock %}</div>
     </div>
   </div>
 </body>
