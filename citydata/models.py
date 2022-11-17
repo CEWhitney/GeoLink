@@ -29,12 +29,14 @@ class Cities(models.Model):
 class Network(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     city = models.ForeignKey(Cities, on_delete=models.CASCADE)
+    hub = models.BooleanField()
     air = models.BooleanField()
 
     def initEdges(owner, air_num, miles): #initalize edges for a user with a couple basic parameters. Good starting place for network
         #start by deleting all edges
-        edges = Network.edges(owner)
+        edges = Edge.objects.filter(owner=owner)
         edges.delete()
+
         net = Network.objects.filter(owner=owner)
         air = net.filter(air=True)
         for a in air:   #connect all air cities to all other air cities
@@ -59,8 +61,8 @@ class Network(models.Model):
             if self.city == e.city1 or self.city == e.city2:
                 e.delete()
     
-    def edges(owner):
-        return Edge.objects.filter(owner=owner)
+    def edges(self, owner):
+        return Edge.objects.filter(city1=self.city,owner=owner) | Edge.objects.filter(city2=self.city,owner=owner)
 
     def linked(self):   #returns querylist of cities with edges to current city
         city_list = []

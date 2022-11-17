@@ -92,7 +92,7 @@ class EditView(tables.SingleTableView):
         net = Network.objects.get(city=city, owner=self.request.user)
 
         context['city'] = city
-        context['air'] = net.air
+        context['net'] = net
 
         return context
 
@@ -120,7 +120,7 @@ def add_request(request): #add city to network and redirect back to add view
     user = request.user
     city = Cities.objects.get(id=request.GET['city'])
 
-    network = Network(owner=user, city=city, air=request.GET['air'])
+    network = Network(owner=user, city=city, air=request.GET['air'], hub=request.GET['hub'])
     network.save()
 
     return HttpResponseRedirect('/citydata/manage/add/')
@@ -138,8 +138,14 @@ def del_request(request): #delete city from network and redirect back to manage 
 def toggle_request(request): #toggle air access of network and redirect back to edit view
     city = Cities.objects.get(id=request.GET['city'])
     network = Network.objects.get(city=city, owner=request.user)
+    attr = request.GET['attr']
+    if attr == 'hub':
+        network.hub = not network.hub
+        network.save()
+        return HttpResponseRedirect('/citydata/manage/edit/?city=' + str(network.city.id))
+
     if (network.air):
-        edges = network.edges()
+        edges = network.edges(request.user)
         for e in edges:
             e.air = False
             e.save()
@@ -151,5 +157,7 @@ def toggle_request(request): #toggle air access of network and redirect back to 
 
 
 def credit_view(request):
-
     return render(request=request, template_name="attribution.html/")
+
+def guide_view(request):
+    return render(request=request, template_name='guide.html/')

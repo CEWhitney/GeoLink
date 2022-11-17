@@ -146,7 +146,7 @@ hr {
   }
 }
 
-#air {
+#city_info {
   display: flex;
   height: auto;
   flex-direction: row;
@@ -154,7 +154,19 @@ hr {
   align-items: center;
 }
 
+#city_info h2 {
+  margin-left: 15px;
+}
+
 #toggle{
   margin: 0px;
   margin-left: 5px;
+}
+
+#hint_id_password1 {
+  text-align:left;
+}
+
+#guide {
+  justify-content: center;
 }

@@ -4,12 +4,20 @@
 {% block content %}
 
 <h1>{{ city.city }}, {{ city.country }}</h1>
-<div id="air">
-  <h2>Air Access: {{ air }}</h2>
-  {% if air %}
+<div id="city_info">
+  <h2>Hub: {{ net.hub }} </h2>
+  <button class="btn btn-info btn-lg shadow-none"id="toggle"onclick="document.getElementById('id03').style.display='block'">
+    {% if net.hub %}
+    Disable
+    {% else %}
+    Enable
+    {% endif %}
+  </button>
+  <h2>Air Access: {{ net.air }} </h2>
+  {% if net.air %}
   <button class="btn btn-info btn-lg shadow-none"id="toggle"onclick="document.getElementById('id02').style.display='block'">Disable</button>
   {% else %}
-  <a class="btn btn-info btn-lg shadow-none"id="toggle"href="{% url 'toggle' %}?city={{ city.id }}">Enable</a>
+  <a class="btn btn-info btn-lg shadow-none"id="toggle"href="{% url 'toggle' %}?city={{ city.id }}&amp;attr=air">Enable</a>
   {% endif %}
 </div>
 <h1>{{ city.city }} has {{ object_list.count }} connections</h1>
@@ -34,17 +42,32 @@
 </div>
 
 <div id="id02" class="modal">
-    <span onclick="document.getElementById('id02').style.display='none'" class="close" title="Close Modal">&times;</span>
-    <form class="modal-content" action="/action_page.php">
-        <div class="container">
-        <h1>Are You Sure?</h1>
-        <p>This will change all connections with this city to land connections</p>
-        <div class="clearfix">
-          <button type="button" class="btn cancelbtn"onclick="document.getElementById('id02').style.display='none'">Cancel</button>
-          <a type="button" class="btn deletebtn"href="{% url 'toggle' %}?city={{ city.id }}">Remove Air Access</a>
-        </div>
+  <span onclick="document.getElementById('id02').style.display='none'" class="close" title="Close Modal">&times;</span>
+  <form class="modal-content" action="/action_page.php">
+    <div class="container">
+      <h1>Are You Sure?</h1>
+      <p>This will change all connections with this city to land connections</p>
+      <p>Re-enabling air access will not revert this change until connections are re-initialized</p>
+      <div class="clearfix">
+        <button type="button" class="btn cancelbtn"onclick="document.getElementById('id02').style.display='none'">Cancel</button>
+        <a type="button" class="btn deletebtn"href="{% url 'toggle' %}?city={{ city.id }}&amp;attr=air">Remove Air Access</a>
       </div>
-    </form>
-  </div>
+    </div>
+  </form>
+</div>
+
+<div id="id03" class="modal">
+  <span onclick="document.getElementById('id03').style.display='none'" class="close" title="Close Modal">&times;</span>
+  <form class="modal-content" action="/action_page.php">
+    <div class="container">
+      <h1>Warning</h1>
+      <p>Change will not be reflected until you run initial network setup again</p>
+      <div class="clearfix">
+        <button type="button" class="btn cancelbtn"onclick="document.getElementById('id03').style.display='none'">Cancel</button>
+        <a type="button" class="btn deletebtn"href="{% url 'toggle' %}?city={{ city.id }}&amp;attr=hub">Change Hub Status</a>
+      </div>
+    </div>
+  </form>
+</div>
 
 {% endblock %}
