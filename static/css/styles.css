@@ -49,28 +49,38 @@ a, a:hover, a:focus {
 }
 
 .btn {
-  background-color: #028cb6;
-  border-color: #028cb6;
+  background-color: #6D9886;
+  border-color: #6D9886;
   margin-top: 5px;
+  box-shadow: none;
 }
 
-* {box-sizing: border-box}
-
-.cancelbtn, .deletebtn {
-  width: 40%;
-  margin-left:5px;
-  margin-right:5px;
+.btn:hover, .btn:focus {
+  background-color:#81b39e;
+  border-color: #81b39e;
 }
 
 /* Add a color to the cancel button */
 .cancelbtn {
   background-color: #ccc;
+  border-color: #ccc;
   color: black;
+}
+
+.cancelbtn:hover, .cancelbtn:focus {
+  background-color: rgb(179, 179, 179);
+  border-color: rgb(179, 179, 179);
 }
 
 /* Add a color to the delete button */
 .deletebtn, #delete {
   background-color: #f44336;
+  border-color: #f44336;
+}
+
+.deletebtn:hover, .deletebtn:focus, #delete:hover, #delete:focus {
+  background-color:#ff2d1e;
+  border-color: #ff2d1e;
 }
 
 /* Add padding and center-align text to the container */
@@ -134,4 +144,17 @@ hr {
   .cancelbtn, .deletebtn {
     width: 100%;
   }
+}
+
+#air {
+  display: flex;
+  height: auto;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+#toggle{
+  margin: 0px;
+  margin-left: 5px;
 }

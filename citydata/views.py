@@ -1,12 +1,10 @@
 from django.shortcuts import render, redirect
-from .models import Cities
-from .models import Network
+from .models import Cities, Network, Edge
 from .utils.forms import PageForm
-from .utils.tables import CitiesTable, AllCitiesTable
+from .utils.tables import CitiesTable, AllCitiesTable, LinkedTable
 import django_tables2 as tables
 from django.http import HttpResponseRedirect
 from django.views.generic.edit import FormMixin
-from django.views import View
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib import messages
@@ -22,6 +20,8 @@ def index(request): #home page
     context = {
         'num_cities': num_cities
     }
+
+    Network.initEdges(request.user, 1, 2)
 
     return render(request, 'index.html', context = context)
 
@@ -74,23 +74,27 @@ class AddView(tables.SingleTableView, FormMixin):
             return HttpResponseRedirect('/citydata/manage/add/?page='+form.cleaned_data['new_page']+'&search='+form.cleaned_data['search_query'])
         return HttpResponseRedirect('/citydata/manage/add/')
 
-class EditView(View, tables.MultiTableMixin):
-    table_class = CitiesTable
+class EditView(tables.SingleTableView):
     queryset = Cities.objects.all()
 
-    template_name = 'ManageViews/manage_read.html'
+    table_class = LinkedTable
 
-    def get(self, request):
-        try:    #This wont ever normally throw an exception but this handles someone manually messing with the url
-            city = Cities.objects.get(id=request.GET.get('city', ''))
-        except Cities.DoesNotExist:
-            return HttpResponseRedirect('/citydata/manage/')
-        except ValueError:
-            return HttpResponseRedirect('/citydata/manage/')
-        context = {
-            'city': city,
-        }
-        return render(request, 'ManageViews/city_edit.html', context = context)
+    template_name='ManageViews/city_edit.html'
+
+    def get_queryset(self):
+        city = Cities.objects.get(id=self.request.GET.get('city', ''))
+        return Network.objects.get(city=city, owner=self.request.user).linked()
+        
+
+    def get_context_data(self, **kwargs):
+        context = super(EditView, self).get_context_data(**kwargs)
+        city = Cities.objects.get(id=self.request.GET.get('city', ''))
+        net = Network.objects.get(city=city, owner=self.request.user)
+
+        context['city'] = city
+        context['air'] = net.air
+
+        return context
 
 def manage_edges(request):
 
@@ -130,3 +134,22 @@ def del_request(request): #delete city from network and redirect back to manage 
     network.delete()
 
     return HttpResponseRedirect('/citydata/manage/')
+
+def toggle_request(request): #toggle air access of network and redirect back to edit view
+    city = Cities.objects.get(id=request.GET['city'])
+    network = Network.objects.get(city=city, owner=request.user)
+    if (network.air):
+        edges = network.edges()
+        for e in edges:
+            e.air = False
+            e.save()
+
+    network.air = not network.air
+    network.save()
+
+    return HttpResponseRedirect('/citydata/manage/edit/?city=' + str(network.city.id))
+
+
+def credit_view(request):
+
+    return render(request=request, template_name="attribution.html/")

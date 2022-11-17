@@ -18,7 +18,7 @@
     <div class="row">
       <div class="col-2" id="sidebar">
       {% block sidebar %}
-        <ul class="sidebar-nav row text-nowrap list-group">
+        <ul style="height:100%;"class="sidebar-nav row text-nowrap list-group">
           <li><a href="{% url 'index' %}">Home</a></li>
           <li><a href="{% url 'manage' %}">Manage Network</a></li>
           <li><a href="{% url 'manage_add' %}">Add Cities</a></li>
@@ -29,8 +29,9 @@
           {% else %}
           <li><a href="{% url 'login' %}">Log in</a></li>
           {% endif %}
+          <li style="margin-top:auto;"><a href="{% url 'credits' %}">Attributions</a></li>
         </ul>
-     {% endblock %}
+      {% endblock %}
       </div>
       <div class="col-sm-10" id="content" align="center">{% block content %}{% endblock %}</div>
     </div>

@@ -1,9 +1,23 @@
 {% extends "base_generic.html" %}
+{% load django_tables2 %}
 
 {% block content %}
 
 <h1>{{ city.city }}, {{ city.country }}</h1>
-<button class="btn btn-info btn-lg"id="delete"onclick="document.getElementById('id01').style.display='block'">Delete</button>
+<div id="air">
+  <h2>Air Access: {{ air }}</h2>
+  {% if air %}
+  <button class="btn btn-info btn-lg shadow-none"id="toggle"onclick="document.getElementById('id02').style.display='block'">Disable</button>
+  {% else %}
+  <a class="btn btn-info btn-lg shadow-none"id="toggle"href="{% url 'toggle' %}?city={{ city.id }}">Enable</a>
+  {% endif %}
+</div>
+<h1>{{ city.city }} has {{ object_list.count }} connections</h1>
+<div class="table-responsive table-block" style="margin-bottom: 50px;margin-top:25px;display: flex;flex-direction: column; height:auto;">
+  {% render_table table 'table.html' %}
+</div>
+
+<button class="btn btn-info btn-lg shadow-none"id="delete"onclick="document.getElementById('id01').style.display='block'">Delete</button>
 
 <div id="id01" class="modal">
   <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
@@ -11,7 +25,6 @@
       <div class="container">
       <h1>Are You Sure?</h1>
       <p>This will remove the city and all associated connections from your network</p>
-  
       <div class="clearfix">
         <button type="button" class="btn cancelbtn"onclick="document.getElementById('id01').style.display='none'">Cancel</button>
         <a type="button" class="btn deletebtn"href="{% url 'delete' %}?city={{ city.id }}">Delete</a>
@@ -19,5 +32,19 @@
     </div>
   </form>
 </div>
+
+<div id="id02" class="modal">
+    <span onclick="document.getElementById('id02').style.display='none'" class="close" title="Close Modal">&times;</span>
+    <form class="modal-content" action="/action_page.php">
+        <div class="container">
+        <h1>Are You Sure?</h1>
+        <p>This will change all connections with this city to land connections</p>
+        <div class="clearfix">
+          <button type="button" class="btn cancelbtn"onclick="document.getElementById('id02').style.display='none'">Cancel</button>
+          <a type="button" class="btn deletebtn"href="{% url 'toggle' %}?city={{ city.id }}">Remove Air Access</a>
+        </div>
+      </div>
+    </form>
+  </div>
 
 {% endblock %}
