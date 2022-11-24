@@ -8,3 +8,13 @@ class PageForm(forms.Form):
 
     search_query = forms.CharField(label='Search', max_length=100, required=False,
                                     widget=TextInput(attrs={'autocomplete': 'off', 'width': '50px', 'placeholder': 'City or Country'}))
+
+class InitForm(forms.Form):
+    air_num = forms.CharField(label='Air City Connections', max_length=2,
+                                widget=NumberInput(attrs={'autocomplete': 'off', 'width': '50px', 'min': '1', 'max': '10', 'placeholder': '3'}))
+    
+    land_num = forms.CharField(label='Land City Connections', max_length=2,
+                                widget=NumberInput(attrs={'autocomplete': 'off', 'width': '50px', 'min': '1', 'max': '10', 'placeholder': '2'}))
+
+    land_range = forms.CharField(label='Land City Range', max_length=3,
+                                widget=NumberInput(attrs={'autocomplete': 'off', 'width': '50px', 'min': '1', 'max': '999', 'placeholder': '75'}))

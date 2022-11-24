@@ -1,0 +1,22 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link active" aria-current="page" href="#">Initialize</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'add_edges' %}">Add Connections</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'custom' %}">Custom Connections</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'exclusions' %}">Exclusions</a>
+    </li>
+  </ul>
+
+  {% csrf_token %}
+  {{ form }}
+
+{% endblock %}

@@ -1,13 +1,15 @@
 from django.shortcuts import render, redirect
-from .models import Cities, Network, Edge
-from .utils.forms import PageForm
+from .models import Cities, Network, Edge, Exclusion
+from .utils.forms import PageForm, InitForm
 from .utils.tables import CitiesTable, AllCitiesTable, LinkedTable
 import django_tables2 as tables
 from django.http import HttpResponseRedirect
 from django.views.generic.edit import FormMixin
+from django.views.generic.base import TemplateView
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib import messages
+from itertools import chain
 
 # Create your views here.
         
@@ -21,7 +23,7 @@ def index(request): #home page
         'num_cities': num_cities
     }
 
-    Network.initEdges(request.user, 1, 2)
+    #Network.initEdges(request.user, 1, 2, 1)
 
     return render(request, 'index.html', context = context)
 
@@ -74,7 +76,7 @@ class AddView(tables.SingleTableView, FormMixin):
             return HttpResponseRedirect('/citydata/manage/add/?page='+form.cleaned_data['new_page']+'&search='+form.cleaned_data['search_query'])
         return HttpResponseRedirect('/citydata/manage/add/')
 
-class EditView(tables.SingleTableView):
+class EditView(tables.SingleTableView): #edit page for single city
     queryset = Cities.objects.all()
 
     table_class = LinkedTable
@@ -96,9 +98,26 @@ class EditView(tables.SingleTableView):
 
         return context
 
-def manage_edges(request):
+class ConnectView(TemplateView, FormMixin):
+    template_name = "ManageViews/Connections/init.html"
 
-    return render(request, 'ManageViews/manage_edges.html')
+    form_class = InitForm
+
+class AddEdgeView(TemplateView):
+    template_name = "ManageViews/Connections/add.html"
+
+class CustomEdgeView(tables.SingleTableView):
+    template_name = "ManageViews/Connections/custom.html"
+
+    def get_queryset(self):
+        return Edge.objects.filter(owner=self.request.user, custom=True)
+
+class ExclusionsView(tables.SingleTableView):
+    template_name = "ManageViews/Connections/exclusions.html"
+
+    def get_queryset(self):
+        return Exclusion.objects.filter(owner=self.request.user)
+
 
 def routing(request):
 

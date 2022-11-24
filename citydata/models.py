@@ -11,50 +11,43 @@ class Cities(models.Model):
     country = models.TextField()
     population = models.IntegerField()
     id = models.BigIntegerField(primary_key=True)
-
+    
     class Meta:
         ordering = ['-population']
         db_table = 'cities'
 
-    def air(self, user):
+    def air(self, user): #returns true if network object for current user and this city has air access
         user= user._wrapped if hasattr(user,'_wrapped') else user
         network = Network.objects.get(city=self,owner=user)
         return network.air
-    
-    def other(self, edge):  #returns city that isn't current city from edge
-        if self == edge.city1:
-            return edge.city2
-        return edge.city1
 
-class Network(models.Model):
+class Network(models.Model): #network vertex
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     city = models.ForeignKey(Cities, on_delete=models.CASCADE)
     hub = models.BooleanField()
     air = models.BooleanField()
 
-    def initEdges(owner, air_num, miles): #initalize edges for a user with a couple basic parameters. Good starting place for network
+    def initEdges(owner, air_num, land_num, miles): #initalize edges for a user with a couple basic parameters. Good starting place for network
         #start by deleting all edges
         edges = Edge.objects.filter(owner=owner)
         edges.delete()
 
         net = Network.objects.filter(owner=owner)
-        air = net.filter(air=True)
-        for a in air:   #connect all air cities to all other air cities
-            ex = air.exclude(city=a.city)
+        hub = net.filter(air=True)
+        for h in hub:   #connect all hub cities to all other air cities
+            ex = hub.exclude(city=h.city)
             for e in ex:
-                edge = Edge(owner=owner,city1=a.city,city2=e.city,air=True)
+                loc1 = (h.city.lat, h.city.lng)
+                loc2 = (e.city.lat, e.city.lng)
+                dist = distance.distance(loc1, loc2).miles
+                edge = Edge(owner=owner,city1=h.city,city2=e.city,air=True, custom=False, distance=dist)
                 edge.save()
-            air = ex
+            hub = ex
         
         #connect all land cities to air_num nearest air cities
-        air = net.filter(air=True)
-        land = net.filter(air=False)
-        for l in land:
-            i =1
-
 
         #connect all land cities to all other land cities within range miles
-
+    
     def delete_edges(self):
         edges = Edge.objects.filter(owner=self.owner)
         for e in edges:
@@ -75,15 +68,15 @@ class Network(models.Model):
         res = Cities.objects.filter(id__in=city_list)
         return res
 
-class Edge(models.Model):
+class Edge(models.Model):   #network edge
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     city1 = models.ForeignKey(Cities, on_delete=models.CASCADE, related_name='city1')
     city2 = models.ForeignKey(Cities, on_delete=models.CASCADE, related_name='city2')
+    distance = models.DecimalField(max_digits=7, decimal_places=2)
     air = models.BooleanField()
+    custom = models.BooleanField()
 
-    def is_edge(c1, c2, user):
-        edges = Edge.objects.filter(owner=user)
-        for e in edges:
-            if (e.city1 == c1 and e.city2 == c2) or (e.city2 == c1 and e.city1 == c2):
-                return True
-        return False
+class Exclusion(models.Model):
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    city1 = models.ForeignKey(Cities, on_delete=models.CASCADE, related_name='excl1')
+    city2 = models.ForeignKey(Cities, on_delete=models.CASCADE, related_name='excl2')
