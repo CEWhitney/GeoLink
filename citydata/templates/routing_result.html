@@ -1,0 +1,18 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Routing Result</h1>
+  <div id="map">
+    {{ my_map|safe }}
+  </div>
+  <h1>{{ city1 }} to {{ city2 }}</h1>
+    {{ path }}
+    <br>
+    {{ edges }}
+    <br>
+    {{ dist }}
+    <br>
+    {{ prev }}
+    <br>
+    {{ queue }}
+{% endblock %}

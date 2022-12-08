@@ -15,8 +15,14 @@
       <a class="nav-link" href="{% url 'exclusions' %}">Exclusions</a>
     </li>
   </ul>
-
-  {% csrf_token %}
-  {{ form }}
-
+  <h1>Initialize Connections</h1>
+  <form action="/citydata/manage/connections/" method="post" style="margin-top:10px; margin-bottom:20px;">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Initialize">
+  </form>
+  <h2>Current Connections</h2>
+  <div id="map">
+    {{ my_map|safe }}
+  </div>
 {% endblock %}

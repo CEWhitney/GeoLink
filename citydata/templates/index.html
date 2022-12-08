@@ -7,6 +7,9 @@
     {% if num_cities > 0 %}
     <h2>Your Network</h2>
     <p>Your network has <strong> {{ num_cities }} </strong> cities</p>
+    <div id="map">
+      {{ my_map|safe }}
+    </div>
     {% else %}
     {% include 'components/quickstart.html' %}
     {% endif %}

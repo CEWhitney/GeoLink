@@ -1,6 +1,6 @@
 from django.db import models
+from django.contrib.gis.db import models as geo
 from django.conf import settings
-from geopy import distance
 
 # Create your models here.
 
@@ -26,27 +26,6 @@ class Network(models.Model): #network vertex
     city = models.ForeignKey(Cities, on_delete=models.CASCADE)
     hub = models.BooleanField()
     air = models.BooleanField()
-
-    def initEdges(owner, air_num, land_num, miles): #initalize edges for a user with a couple basic parameters. Good starting place for network
-        #start by deleting all edges
-        edges = Edge.objects.filter(owner=owner)
-        edges.delete()
-
-        net = Network.objects.filter(owner=owner)
-        hub = net.filter(air=True)
-        for h in hub:   #connect all hub cities to all other air cities
-            ex = hub.exclude(city=h.city)
-            for e in ex:
-                loc1 = (h.city.lat, h.city.lng)
-                loc2 = (e.city.lat, e.city.lng)
-                dist = distance.distance(loc1, loc2).miles
-                edge = Edge(owner=owner,city1=h.city,city2=e.city,air=True, custom=False, distance=dist)
-                edge.save()
-            hub = ex
-        
-        #connect all land cities to air_num nearest air cities
-
-        #connect all land cities to all other land cities within range miles
     
     def delete_edges(self):
         edges = Edge.objects.filter(owner=self.owner)
@@ -55,7 +34,7 @@ class Network(models.Model): #network vertex
                 e.delete()
     
     def edges(self, owner):
-        return Edge.objects.filter(city1=self.city,owner=owner) | Edge.objects.filter(city2=self.city,owner=owner)
+        return list(Edge.objects.filter(city1=self.city,owner=owner) | Edge.objects.filter(city2=self.city,owner=owner))
 
     def linked(self):   #returns querylist of cities with edges to current city
         city_list = []
@@ -73,7 +52,9 @@ class Edge(models.Model):   #network edge
     city1 = models.ForeignKey(Cities, on_delete=models.CASCADE, related_name='city1')
     city2 = models.ForeignKey(Cities, on_delete=models.CASCADE, related_name='city2')
     distance = models.DecimalField(max_digits=7, decimal_places=2)
+    duration = models.DecimalField(max_digits=6, decimal_places=2)
     air = models.BooleanField()
+    line = geo.LineStringField()
     custom = models.BooleanField()
 
 class Exclusion(models.Model):

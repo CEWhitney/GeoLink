@@ -11,10 +11,12 @@ urlpatterns = [
     path('manage/connections/custom/', views.CustomEdgeView.as_view(), name='custom'),
     path('manage/connections/exclusions/', views.ExclusionsView.as_view(), name='exclusions'),
     path('manage/', views.ManageView.as_view(), name='manage'),
-    path('routing/', views.routing, name='routing'),
+    path('routing/result', views.RoutingResultView.as_view(), name='result'),
+    path('routing/', views.RoutingView.as_view(), name='routing'),
     path('register', views.register_request, name='register'),
     path('manage/edit/', views.EditView.as_view(), name='edit'),
     path('add', views.add_request, name='add'),
     path('delete', views.del_request, name='delete'),
     path('toggle', views.toggle_request, name='toggle'),
+    path('init', views.init_request, name='init'),
 ]

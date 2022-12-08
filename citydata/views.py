@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from .models import Cities, Network, Edge, Exclusion
 from .utils.forms import PageForm, InitForm
 from .utils.tables import CitiesTable, AllCitiesTable, LinkedTable
+from .utils.maps import get_static_map, get_route_map, get_link_map
+from .utils.model_utils import initEdges, dijkstra
 import django_tables2 as tables
 from django.http import HttpResponseRedirect
 from django.views.generic.edit import FormMixin
@@ -9,21 +11,26 @@ from django.views.generic.base import TemplateView
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib import messages
-from itertools import chain
+
 
 # Create your views here.
         
 def index(request): #home page
     if request.user.is_authenticated:
-        num_cities = Network.objects.filter(owner=request.user).count()
+        cities = Network.objects.filter(owner=request.user)
     else:
-        num_cities = Network.objects.all()
+        cities = Network.objects.all()
+    
+    cities_list = list(cities)
+
+    #initEdges(request.user, 1, 1, 74)
+
+    my_map = get_static_map(cities_list)
 
     context = {
-        'num_cities': num_cities
+        'num_cities': cities.count(),
+        'my_map' : my_map
     }
-
-    #Network.initEdges(request.user, 1, 2, 1)
 
     return render(request, 'index.html', context = context)
 
@@ -103,6 +110,25 @@ class ConnectView(TemplateView, FormMixin):
 
     form_class = InitForm
 
+    def get_context_data(self, **kwargs):
+        context = super(ConnectView, self).get_context_data(**kwargs)
+        cities = Network.objects.filter(owner=self.request.user)
+        edges = Edge.objects.filter(owner=self.request.user)
+        edge_list = list(edges)
+        cities_list = list(cities)
+
+        my_map = get_link_map(cities_list, edge_list)
+
+        context['my_map'] = my_map
+
+        return context
+
+    def post(self,request): #form submit, adds form values to url params
+        form = InitForm(request.POST)
+        if form.is_valid():
+            return HttpResponseRedirect('/citydata/init?air='+form.cleaned_data['air_num']+'&land='+form.cleaned_data['land_num']+'&range='+form.cleaned_data['land_range'])
+        return HttpResponseRedirect('/citydata/manage/connections/')
+
 class AddEdgeView(TemplateView):
     template_name = "ManageViews/Connections/add.html"
 
@@ -119,9 +145,31 @@ class ExclusionsView(tables.SingleTableView):
         return Exclusion.objects.filter(owner=self.request.user)
 
 
-def routing(request):
+class RoutingView(TemplateView):
+    template_name = 'routing.html'
+    
 
-    return render(request, 'routing.html')
+class RoutingResultView(TemplateView):
+    template_name='routing_result.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(RoutingResultView, self).get_context_data(**kwargs)
+        city1 = int(self.request.GET['1'])
+        city2 = int(self.request.GET['2'])
+        cities_list = list(Network.objects.filter(owner=self.request.user))
+        path = dijkstra(self.request.user, 'distance', cities_list[city1].city, cities_list[city2].city)
+        my_map = get_route_map(cities_list, path)
+        
+        context['my_map'] = my_map
+        context['edges'] = path['edge_trace']
+        context['city1'] = cities_list[city1].city.city
+        context['city2'] = cities_list[city2].city.city
+        context['path'] = path['S']
+        context['dist'] = path['dist']
+        context['prev'] = path['prev']
+        context['queue'] = path['queue']
+
+        return context
 
 def register_request(request): #registration page
 	if request.method == "POST":
@@ -173,6 +221,11 @@ def toggle_request(request): #toggle air access of network and redirect back to 
     network.save()
 
     return HttpResponseRedirect('/citydata/manage/edit/?city=' + str(network.city.id))
+
+def init_request(request):
+    initEdges(request.user, request.GET['air'], request.GET['land'], request.GET['range'])
+
+    return HttpResponseRedirect('/citydata/manage/connections/')
 
 
 def credit_view(request):

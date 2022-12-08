@@ -170,3 +170,7 @@ hr {
 #guide {
   justify-content: center;
 }
+
+#map {
+  width:60%;
+}
