@@ -134,7 +134,7 @@ def dijkstra(owner, mode, city1, city2):
         connected = list(set(connected).intersection(set(current)))
         for v in connected:
             edge = (Edge.objects.filter(city1=vertices[u].city,city2=v) | Edge.objects.filter(city1=v,city2=vertices[u].city))[0]
-            alt = dist[u] + edge.distance if mode == 'distance' else dist[u] + edge.duration
+            alt = dist[u] + edge.distance if mode == 'Distance' else dist[u] + edge.duration
             net = Network.objects.get(owner=owner,city=v)
             if alt < dist[vertices.index(net)]:
                 dist[vertices.index(net)] = alt

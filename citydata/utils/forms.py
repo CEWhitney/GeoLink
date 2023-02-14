@@ -18,3 +18,4 @@ class InitForm(forms.Form):
 
     land_range = forms.CharField(label='Land City Range', max_length=3, required=False,
                                 widget=NumberInput(attrs={'autocomplete': 'off', 'width': '50px', 'min': '1', 'max': '999', 'placeholder': '75'}))
+

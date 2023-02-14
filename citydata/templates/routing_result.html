@@ -1,18 +1,76 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-  <h1>Routing Result</h1>
+  {% load index %}
+  <h1>Routing Result: {{ city1 }} to {{ city2 }}</h1>
   <div id="map">
     {{ my_map|safe }}
   </div>
-  <h1>{{ city1 }} to {{ city2 }}</h1>
-    {{ path }}
+  <div id="route">
+    <div style="grid-column:1;">Stop</div>
+    <div style="grid-column:2;">City</div>
+    <div style="grid-column:3;">Travel Type</div>
+    <div style="grid-column:4;">Distance</div>
+    <div style="grid-column:5;">Travel Duration</div>
     <br>
-    {{ edges }}
+  {% for c in path %}
+    <div style="grid-column:1;">
+      {% if forloop.first %}
+        Source:
+      {% elif forloop.last %}
+        Destination:
+      {% else %}
+        Stop {{forloop.counter0}}:
+      {% endif %}
+    </div>
+    <div style="grid-column:2;">
+      {{c.city}}
+    </div>
+    <div style="grid-column:3">
+      {% if forloop.first %} 
+        N/A
+      {% else %}
+        {{ travel_type|index:forloop.counter0 }}
+      {% endif %}
+    </div>
+    <div style="grid-column:4">
+      {% if forloop.first %} 
+        N/A
+      {% else %}
+        {{ dist|index:forloop.counter0 }} mi.
+      {% endif %}
+    </div>
+    <div style="grid-column:5">
+      {% if forloop.first %} 
+        N/A
+      {% else %}
+        {{ time|index:forloop.counter0 }} hours
+      {% endif %}
+    </div>
     <br>
-    {{ dist }}
-    <br>
-    {{ prev }}
-    <br>
-    {{ queue }}
+  {% endfor %}
+    <div style="grid-column:1;">Total:</div>
+    <div style="grid-column:2;">N/A</div>
+    <div style="grid-column:3;">N/A</div>
+    <div style="grid-column:4;">{{ total_dist }} mi.</div>
+    <div style="grid-column:5;">{{ total_time }} hours</div>
+  </div>
+
+  <div style="display:flex; align-items:center; gap:15px; width:60%; height:42px;">
+    <div class="btn" onclick="copyDivToClipboard()"> Copy </div>
+    <p id="confirm" hidden style="margin:0px; font-size:24px;"> Copied! </p>
+  </div>
+
+  <script>
+    function copyDivToClipboard() {
+      var range = document.createRange();
+      range.selectNode(document.getElementById("route"));
+      window.getSelection().removeAllRanges(); // clear current selection
+      window.getSelection().addRange(range); // to select text
+      document.execCommand("copy");
+      window.getSelection().removeAllRanges();// to deselect
+      var confirm = document.getElementById("confirm")
+      confirm.hidden = false;
+    }
+  </script>
 {% endblock %}

@@ -174,3 +174,14 @@ hr {
 #map {
   width:60%;
 }
+
+#route {
+  overflow:auto;
+  border: 1px solid #ccc;
+  width:60%;
+  height:auto;
+  height:25%;
+  display:grid;
+  grid-template-columns: 10% auto 10% 20% 20%;
+  margin-top:10px;
+}

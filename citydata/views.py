@@ -12,7 +12,6 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib import messages
 
-
 # Create your views here.
         
 def index(request): #home page
@@ -147,6 +146,24 @@ class ExclusionsView(tables.SingleTableView):
 
 class RoutingView(TemplateView):
     template_name = 'routing.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(RoutingView, self).get_context_data(**kwargs)
+
+        networks = Network.objects.filter(owner=self.request.user)
+        cities = []
+        for n in networks:
+            cities.append(n.city)
+        context['cities'] = cities
+
+        return context
+    
+    def post(self, request):
+        form = request.POST
+        city1 = form.get('city1_select', "")
+        city2 = form.get('city2_select', "")
+        priority = form.get('priority', "")
+        return HttpResponseRedirect('/citydata/routing/result?1='+city1+"&2="+city2+"&p="+priority)
     
 
 class RoutingResultView(TemplateView):
@@ -154,20 +171,38 @@ class RoutingResultView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(RoutingResultView, self).get_context_data(**kwargs)
-        city1 = int(self.request.GET['1'])
-        city2 = int(self.request.GET['2'])
+        city1 = Cities.objects.get(id=int(self.request.GET['1']))
+        city2 = Cities.objects.get(id=int(self.request.GET['2']))
+        priority = self.request.GET['p']
         cities_list = list(Network.objects.filter(owner=self.request.user))
-        path = dijkstra(self.request.user, 'distance', cities_list[city1].city, cities_list[city2].city)
+        path = dijkstra(self.request.user, priority, city1, city2)
         my_map = get_route_map(cities_list, path)
+        edges = path['edge_trace']
+        dist = []
+        time = []
+        travel_type = []
+        for e in edges:
+            dist.append(e.distance)
+            time.append(e.duration)
+            if e.air:
+                travel_type.append("Air")
+            else:
+                travel_type.append("Road")
+        total_dist = sum(dist)
+        total_time = sum(time)
+
         
         context['my_map'] = my_map
-        context['edges'] = path['edge_trace']
-        context['city1'] = cities_list[city1].city.city
-        context['city2'] = cities_list[city2].city.city
+        context['edges'] = edges
+        context['city1'] = city1.city
+        context['city2'] = city2.city
+        context['dist'] = dist
+        context['time'] = time
         context['path'] = path['S']
-        context['dist'] = path['dist']
-        context['prev'] = path['prev']
-        context['queue'] = path['queue']
+        context['travel_type'] = travel_type
+        context['total_dist'] = total_dist
+        context['total_time'] = total_time
+
 
         return context
 
@@ -226,7 +261,6 @@ def init_request(request):
     initEdges(request.user, request.GET['air'], request.GET['land'], request.GET['range'])
 
     return HttpResponseRedirect('/citydata/manage/connections/')
-
 
 def credit_view(request):
     return render(request=request, template_name="attribution.html/")

@@ -1,1 +1,28 @@
 {% extends "base_generic.html" %}
+
+{% block content %}
+<h1> Route From City to City </h1>
+
+<form method="POST">
+    {% csrf_token %}
+    <label for "city1_select"> Source City </label>
+    <select name="city1_select" id="city1_select">
+    {% for city in cities %}
+        <option value="{{ city.id }}">{{ city.city }}</option>
+    {% endfor %}
+    </select>
+    <label for "city2_select"> Destination City </label>
+    <select name="city2_select" id="city2_select">
+        <p> Destination City </p>
+        {% for city in cities %}
+            <option value="{{ city.id }}">{{ city.city }}</option>
+        {% endfor %}
+    </select>
+    <label for "priority"> Optimize for </label>
+    <select name="priority" id="priority">
+        <option value="Time"> Time </option>
+        <option value="Distance"> Distance </option>
+    </select>
+    <input type="submit" value="Route">
+</form>
+{% endblock %}
