@@ -134,11 +134,15 @@ class AddEdgeView(TemplateView):
 class CustomEdgeView(tables.SingleTableView):
     template_name = "ManageViews/Connections/custom.html"
 
+    table_class = CitiesTable
+
     def get_queryset(self):
         return Edge.objects.filter(owner=self.request.user, custom=True)
 
 class ExclusionsView(tables.SingleTableView):
     template_name = "ManageViews/Connections/exclusions.html"
+
+    table_class = CitiesTable
 
     def get_queryset(self):
         return Exclusion.objects.filter(owner=self.request.user)

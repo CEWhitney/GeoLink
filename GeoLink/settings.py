@@ -88,8 +88,12 @@ WSGI_APPLICATION = 'GeoLink.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.spatialite',
-        'NAME': BASE_DIR / 'cities',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'dc1kojafe2snn7',
+        'USER': 'zotgljzdinxbdz',
+        'PASSWORD': 'ed53a409c0569adb7749f9b154f707e1f6d578abc3fac3cb62074c36f7784fad',
+        'HOST': 'ec2-3-218-171-44.compute-1.amazonaws.com',
+        'PORT': '5432',
     }
 }
 
@@ -167,3 +171,9 @@ if os.name == 'nt':
     os.environ['PROJ_LIB'] = os.path.join(VENV_BASE, 'Lib\\site-packages\\osgeo\\data\\proj') + ';' + os.environ['PATH']
 
 #SPATIALITE_LIBRARY_PATH = "mod_spatialite"
+
+import dj_database_url
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)    
+
+ALLOWED_HOSTS += ['ec2-3-218-171-44.compute-1.amazonaws.com','127.0.0.1']

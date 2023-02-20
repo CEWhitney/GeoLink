@@ -15,7 +15,6 @@ django-tables2==2.4.1
 djangorestframework==3.14.0
 docopt==0.6.2
 folium==0.13.0
-GDAL @ file:///C:/Users/ciara/pipwin/GDAL-3.4.3-cp311-cp311-win_amd64.whl
 geographiclib==2.0
 geopy==2.3.0
 idna==3.4

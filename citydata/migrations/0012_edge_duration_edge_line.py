@@ -5,6 +5,7 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+    initial = True
 
     dependencies = [
         ('citydata', '0011_edge_distance'),
@@ -20,7 +21,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='edge',
             name='line',
-            field=django.contrib.gis.db.models.fields.LineStringField(default=(0, 0), srid=4326),
+            field=django.contrib.gis.db.models.fields.LineStringField(srid=4326),
             preserve_default=False,
         ),
     ]
